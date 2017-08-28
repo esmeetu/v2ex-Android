@@ -1,10 +1,12 @@
 package com.firefly.v2ex.Topics;
 
+import java.util.Date;
+
 /**
  * Created by wangyapeng on 2017/8/28.
  */
 
-public class HotTopics {
+public class HotTopic {
 
     /**
      * id : 386172
@@ -44,7 +46,7 @@ public class HotTopics {
      * last_touched : 1503899620
      */
 
-    private int id;
+    private long id;
     private String title;
     private String url;
     private String content;
@@ -52,11 +54,11 @@ public class HotTopics {
     private int replies;
     private MemberBean member;
     private NodeBean node;
-    private int created;
-    private int last_modified;
-    private int last_touched;
+    private long created;
+    private long last_modified;
+    private long last_touched;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -120,7 +122,7 @@ public class HotTopics {
         this.node = node;
     }
 
-    public int getCreated() {
+    public long getCreated() {
         return created;
     }
 
@@ -128,7 +130,7 @@ public class HotTopics {
         this.created = created;
     }
 
-    public int getLast_modified() {
+    public long getLast_modified() {
         return last_modified;
     }
 
@@ -136,7 +138,7 @@ public class HotTopics {
         this.last_modified = last_modified;
     }
 
-    public int getLast_touched() {
+    public long getLast_touched() {
         return last_touched;
     }
 

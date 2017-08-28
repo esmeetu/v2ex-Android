@@ -6,25 +6,29 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.Toast;
 
-import com.firefly.v2ex.Topics.HotTopics;
+import com.firefly.v2ex.Topics.HotTopic;
 import com.firefly.v2ex.net.Api;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
-
-import org.json.JSONException;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.List;
 
 /**
  * Created by wangyapeng on 2017/8/28.
  */
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
-    TextView textView;
+//    TextView textView;
+    ListView listView;
 
     Button button;
 
@@ -33,16 +37,28 @@ public class MainActivity extends AppCompatActivity{
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    textView.setText((String) msg.obj);
+//                    textView.setText((String) msg.obj);
                     try {
-                        HotTopics topics = new Gson().fromJson((String) msg.obj, HotTopics.class);
+                        Type listType = new TypeToken<List<HotTopic>>(){}.getType();
+//                        HotTopic[] topics = new Gson().fromJson((String) msg.obj, HotTopic[].class);
+                        final List<HotTopic> topicItems = new Gson().fromJson((String) msg.obj, listType);
+                        TopicAdapter adapter = new TopicAdapter(MainActivity.this, R.layout.topic_item, topicItems);
+                        listView.setAdapter(adapter);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                                HotTopic topic = topicItems.get(position);
+                                Toast.makeText(MainActivity.this, topic.getContent(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         //this is a java object
                     }catch (JsonParseException e) {
                         e.printStackTrace();
                     }
                     break;
                 case 2:
-                    textView.setText((String) msg.obj);
+//                    textView.setText((String) msg.obj);
                     break;
             }
             return false;
@@ -53,7 +69,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textView = (TextView) findViewById(R.id.textview);
+//        textView = (TextView) findViewById(R.id.textview);
+        listView = (ListView) findViewById(R.id.hots);
         button = (Button) findViewById(R.id.get_data);
 
         button.setOnClickListener(new View.OnClickListener() {

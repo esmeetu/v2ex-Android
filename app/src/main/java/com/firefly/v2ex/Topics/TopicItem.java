@@ -38,4 +38,48 @@ public class TopicItem {
     public String toString() {
         return content;
     }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public String getContent_rendered() {
+        return content_rendered;
+    }
+
+    public int getRelplies() {
+        return relplies;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Node getNode() {
+        return node;
+    }
+
+    public long getCreated() {
+        return created;
+    }
+
+    public long getLast_modified() {
+        return last_modified;
+    }
+
+    public long getLast_touched() {
+        return last_touched;
+    }
 }

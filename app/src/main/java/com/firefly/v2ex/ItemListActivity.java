@@ -71,28 +71,6 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Api api = new Api();
-                String hotsJsonResponse = null;
-                List<TopicItem> hots = null;
-                try {
-                    hotsJsonResponse = api.getHots();
-                    Type hots_type = new TypeToken<List<TopicItem>>(){}.getType();
-                    hots = gson.fromJson(hotsJsonResponse, hots_type);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                if (hots != null) {
-                    TopicSource.HOTS.addAll(hots);
-                    for (TopicItem topic : hots) {
-                        TopicSource.HOTS_MAP.put(topic.id, topic);
-                        System.out.println(topic.title);
-                    }
-                }
-            }
-        }).start();
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
