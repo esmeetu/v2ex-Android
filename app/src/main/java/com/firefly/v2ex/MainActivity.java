@@ -5,6 +5,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -42,18 +46,28 @@ public class MainActivity extends AppCompatActivity {
                         Type listType = new TypeToken<List<HotTopic>>(){}.getType();
 //                        HotTopic[] topics = new Gson().fromJson((String) msg.obj, HotTopic[].class);
                         final List<HotTopic> topicItems = new Gson().fromJson((String) msg.obj, listType);
-                        TopicAdapter adapter = new TopicAdapter(MainActivity.this, R.layout.topic_item, topicItems);
-                        listView.setAdapter(adapter);
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                                HotTopic topic = topicItems.get(position);
-                                Toast.makeText(MainActivity.this, topic.getContent(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
+//                        TopicAdapter adapter = new TopicAdapter(MainActivity.this, R.layout.topic_item, topicItems);
+                        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.hots);
+                        StaggeredGridLayoutManager layoutManager =
+                                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+//                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+//                        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                        recyclerView.setLayoutManager(layoutManager);
+                        HotAdapter adapter = new HotAdapter(topicItems);
+                        Log.d("size: ", String.valueOf(adapter.getItemCount()));
+                        recyclerView.setAdapter(adapter);
+//                        listView.setAdapter(adapter);
+//                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//
+//                            @Override
+//                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+//                                HotTopic topic = topicItems.get(position);
+//                                Toast.makeText(MainActivity.this, topic.getContent(), Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
                         //this is a java object
                     }catch (JsonParseException e) {
+                        Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
                     break;
@@ -70,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 //        textView = (TextView) findViewById(R.id.textview);
-        listView = (ListView) findViewById(R.id.hots);
+//        listView = (ListView) findViewById(R.id.hots);
         button = (Button) findViewById(R.id.get_data);
 
         button.setOnClickListener(new View.OnClickListener() {
