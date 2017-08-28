@@ -15,10 +15,18 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.firefly.v2ex.Topics.Api;
 import com.firefly.v2ex.Topics.TopicItem;
 import com.firefly.v2ex.Topics.TopicSource;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 /**
  * An activity representing a list of Items. This activity
@@ -35,6 +43,8 @@ public class ItemListActivity extends AppCompatActivity {
      * device.
      */
     private boolean mTwoPane;
+
+    private static final Gson gson = new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,12 +67,6 @@ public class ItemListActivity extends AppCompatActivity {
         View recyclerView = findViewById(R.id.item_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                TopicSource.getHots();
-            }
-        }).start();
         if (findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -70,7 +74,28 @@ public class ItemListActivity extends AppCompatActivity {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
-
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Api api = new Api();
+                String hotsJsonResponse = null;
+                List<TopicItem> hots = null;
+                try {
+                    hotsJsonResponse = api.getHots();
+                    Type hots_type = new TypeToken<List<TopicItem>>(){}.getType();
+                    hots = gson.fromJson(hotsJsonResponse, hots_type);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (hots != null) {
+                    TopicSource.HOTS.addAll(hots);
+                    for (TopicItem topic : hots) {
+                        TopicSource.HOTS_MAP.put(topic.id, topic);
+                        System.out.println(topic.title);
+                    }
+                }
+            }
+        }).start();
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

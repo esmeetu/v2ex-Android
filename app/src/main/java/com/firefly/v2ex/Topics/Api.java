@@ -5,6 +5,8 @@ package com.firefly.v2ex.Topics;
  */
 
 
+import android.util.Log;
+
 import java.io.IOException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -14,12 +16,15 @@ public class Api {
 
     OkHttpClient client = new OkHttpClient();
 
-    String run(String url) throws IOException {
+    public static final String V2EX_HOTS_URL = "https://www.v2ex.com/api/topics/hot.json";
+
+    public String getHots() throws IOException {
         Request request = new Request.Builder()
-                .url(url)
+                .url(V2EX_HOTS_URL)
                 .build();
 
         Response response = client.newCall(request).execute();
-        return response.body().toString();
+        if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+        return response.body().string();
     }
 }
