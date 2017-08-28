@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
-import com.firefly.v2ex.Topics.Api;
+import com.firefly.v2ex.net.Api;
 import com.firefly.v2ex.Topics.TopicItem;
 import com.firefly.v2ex.Topics.TopicSource;
 import com.google.gson.Gson;
@@ -24,9 +24,6 @@ import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 /**
  * An activity representing a list of Items. This activity

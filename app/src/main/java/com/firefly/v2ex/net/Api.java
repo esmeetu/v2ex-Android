@@ -1,4 +1,4 @@
-package com.firefly.v2ex.Topics;
+package com.firefly.v2ex.net;
 
 /**
  * Created by jason on 8/24/17.
@@ -14,9 +14,9 @@ import okhttp3.Response;
 
 public class Api {
 
-    OkHttpClient client = new OkHttpClient();
+    private static OkHttpClient client = new OkHttpClient.Builder().retryOnConnectionFailure(true).build();
 
-    public static final String V2EX_HOTS_URL = "https://www.v2ex.com/api/topics/hot.json";
+    private static final String V2EX_HOTS_URL = "https://www.v2ex.com/api/topics/hot.json";
 
     public String getHots() throws IOException {
         Request request = new Request.Builder()
