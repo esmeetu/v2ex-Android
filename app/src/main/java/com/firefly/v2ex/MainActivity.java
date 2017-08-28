@@ -12,6 +12,9 @@ import android.widget.TextView;
 import com.firefly.v2ex.Topics.HotTopics;
 import com.firefly.v2ex.net.Api;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 
@@ -31,8 +34,12 @@ public class MainActivity extends AppCompatActivity{
             switch (msg.what) {
                 case 1:
                     textView.setText((String) msg.obj);
-                    HotTopics topics = new Gson().fromJson((String) msg.obj, HotTopics.class);
-                    //this is a java object
+                    try {
+                        HotTopics topics = new Gson().fromJson((String) msg.obj, HotTopics.class);
+                        //this is a java object
+                    }catch (JsonParseException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case 2:
                     textView.setText((String) msg.obj);
