@@ -1,5 +1,6 @@
 package com.firefly.v2ex;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -56,15 +57,6 @@ public class MainActivity extends AppCompatActivity {
                         HotAdapter adapter = new HotAdapter(topicItems);
                         Log.d("size: ", String.valueOf(adapter.getItemCount()));
                         recyclerView.setAdapter(adapter);
-//                        listView.setAdapter(adapter);
-//                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//
-//                            @Override
-//                            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-//                                HotTopic topic = topicItems.get(position);
-//                                Toast.makeText(MainActivity.this, topic.getContent(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
                         //this is a java object
                     }catch (JsonParseException e) {
                         Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
@@ -90,9 +82,50 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getData();
+//                getData();
+                hotTask ht = new hotTask();
+                ht.execute();
             }
         });
+    }
+
+    private class hotTask extends AsyncTask {
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            Api api = new Api();
+            try {
+                String hotsJsonResponse = api.getHots();
+                return hotsJsonResponse;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+            try {
+                Type listType = new TypeToken<List<HotTopic>>(){}.getType();
+//                        HotTopic[] topics = new Gson().fromJson((String) msg.obj, HotTopic[].class);
+                final List<HotTopic> topicItems = new Gson().fromJson((String) o, listType);
+//                        TopicAdapter adapter = new TopicAdapter(MainActivity.this, R.layout.topic_item, topicItems);
+                RecyclerView recyclerView = (RecyclerView) findViewById(R.id.hots);
+                StaggeredGridLayoutManager layoutManager =
+                        new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+//                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+//                        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+                recyclerView.setLayoutManager(layoutManager);
+                HotAdapter adapter = new HotAdapter(topicItems);
+                Log.d("size: ", String.valueOf(adapter.getItemCount()));
+                recyclerView.setAdapter(adapter);
+                //this is a java object
+            }catch (JsonParseException e) {
+                Toast.makeText(MainActivity.this, o.toString(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+        }
     }
 
     private void getData() {
