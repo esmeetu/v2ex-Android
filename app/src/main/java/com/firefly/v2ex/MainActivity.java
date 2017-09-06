@@ -1,5 +1,9 @@
 package com.firefly.v2ex;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,6 +21,10 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.firefly.v2ex.Topics.HotTopic;
+import com.firefly.v2ex.countdown.CountDownReceiver;
+import com.firefly.v2ex.countdown.CountDownService;
+import com.firefly.v2ex.countdown.CountDownSingleton;
+import com.firefly.v2ex.countdown.TimerListener;
 import com.firefly.v2ex.net.Api;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -79,14 +87,25 @@ public class MainActivity extends AppCompatActivity {
 //        listView = (ListView) findViewById(R.id.hots);
         button = (Button) findViewById(R.id.get_data);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        Intent intent = new Intent(MainActivity.this, CountDownService.class);
+        startService(intent);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("countDown");
+        registerReceiver(new BroadcastReceiver() {
             @Override
-            public void onClick(View v) {
-//                getData();
-                hotTask ht = new hotTask();
-                ht.execute();
+            public void onReceive(Context context, Intent intent) {
+                button.setText(intent.getIntExtra("value", 0) + "");
             }
-        });
+        }, intentFilter);
+
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+////                getData();
+//                hotTask ht = new hotTask();
+//                ht.execute();
+//            }
+//        });
     }
 
     private class hotTask extends AsyncTask {

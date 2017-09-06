@@ -5,5 +5,5 @@ package com.firefly.v2ex.countdown;
  */
 
 public interface TimerListener {
-    void getTimer(CountDownSingleton cdInstance);
+    void onTimeChange(int currentValue);
 }
