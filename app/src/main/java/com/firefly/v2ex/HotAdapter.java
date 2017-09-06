@@ -23,7 +23,6 @@ public class HotAdapter extends RecyclerView.Adapter<HotAdapter.ViewHolder> {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日HH时");
 
-
     static class ViewHolder extends RecyclerView.ViewHolder {
         View topicView;
         TextView topicTitle;
