@@ -44,4 +44,35 @@ public class Member {
     public String getAvatar_large() {
         return avatar_large;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Member member = (Member) o;
+
+        if (id != member.id) return false;
+        if (username != null ? !username.equals(member.username) : member.username != null)
+            return false;
+        if (tagline != null ? !tagline.equals(member.tagline) : member.tagline != null)
+            return false;
+        if (avatar_mini != null ? !avatar_mini.equals(member.avatar_mini) : member.avatar_mini != null)
+            return false;
+        if (avatar_normal != null ? !avatar_normal.equals(member.avatar_normal) : member.avatar_normal != null)
+            return false;
+        return avatar_large != null ? avatar_large.equals(member.avatar_large) : member.avatar_large == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (id ^ (id >>> 32));
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (tagline != null ? tagline.hashCode() : 0);
+        result = 31 * result + (avatar_mini != null ? avatar_mini.hashCode() : 0);
+        result = 31 * result + (avatar_normal != null ? avatar_normal.hashCode() : 0);
+        result = 31 * result + (avatar_large != null ? avatar_large.hashCode() : 0);
+        return result;
+    }
 }

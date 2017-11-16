@@ -1,165 +1,122 @@
 package com.firefly.v2ex;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.AsyncTask;
+
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.firefly.v2ex.Topics.HotTopic;
-import com.firefly.v2ex.countdown.CountDownReceiver;
-import com.firefly.v2ex.countdown.CountDownService;
-import com.firefly.v2ex.countdown.CountDownSingleton;
-import com.firefly.v2ex.countdown.TimerListener;
-import com.firefly.v2ex.net.Api;
-import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
-import com.google.gson.reflect.TypeToken;
+import com.firefly.v2ex.bean.GankBean;
+import com.firefly.v2ex.net.IApi;
+import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by wangyapeng on 2017/8/28.
- */
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-//    TextView textView;
+    @BindView(R.id.list_view)
     ListView listView;
 
-    Button button;
-
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-//                    textView.setText((String) msg.obj);
-                    try {
-                        Type listType = new TypeToken<List<HotTopic>>(){}.getType();
-//                        HotTopic[] topics = new Gson().fromJson((String) msg.obj, HotTopic[].class);
-                        final List<HotTopic> topicItems = new Gson().fromJson((String) msg.obj, listType);
-//                        TopicAdapter adapter = new TopicAdapter(MainActivity.this, R.layout.topic_item, topicItems);
-                        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.hots);
-                        StaggeredGridLayoutManager layoutManager =
-                                new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-//                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-//                        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-                        recyclerView.setLayoutManager(layoutManager);
-                        HotAdapter adapter = new HotAdapter(topicItems);
-                        Log.d("size: ", String.valueOf(adapter.getItemCount()));
-                        recyclerView.setAdapter(adapter);
-                        //this is a java object
-                    }catch (JsonParseException e) {
-                        Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                    }
-                    break;
-                case 2:
-//                    textView.setText((String) msg.obj);
-                    break;
-            }
-            return false;
-        }
-    });
+    MyAdapter adapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        textView = (TextView) findViewById(R.id.textview);
-//        listView = (ListView) findViewById(R.id.hots);
-        button = (Button) findViewById(R.id.get_data);
+        ButterKnife.bind(this);
 
-        Intent intent = new Intent(MainActivity.this, CountDownService.class);
-        startService(intent);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction("countDown");
-        registerReceiver(new BroadcastReceiver() {
+        adapter = new MyAdapter();
+        listView.setAdapter(adapter);
+
+
+        IApi.getGankApi().getList().enqueue(new Callback<GankBean>() {
             @Override
-            public void onReceive(Context context, Intent intent) {
-                button.setText(intent.getIntExtra("value", 0) + "");
+            public void onResponse(Call<GankBean> call, Response<GankBean> response) {
+                Log.d("TAG", response.body().toString());
+                adapter.update(response.body().getResults());
             }
-        }, intentFilter);
 
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-////                getData();
-//                hotTask ht = new hotTask();
-//                ht.execute();
-//            }
-//        });
+            @Override
+            public void onFailure(Call<GankBean> call, Throwable t) {
+
+            }
+        });
     }
 
-    private class hotTask extends AsyncTask {
+    public class MyAdapter extends BaseAdapter {
+
+        private List<GankBean.ResultsBean> data = new ArrayList<>();
 
         @Override
-        protected Object doInBackground(Object[] objects) {
-            Api api = new Api();
-            try {
-                String hotsJsonResponse = api.getHots();
-                return hotsJsonResponse;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        public int getCount() {
+            return data.size();
+        }
+
+        public void update(List<GankBean.ResultsBean> data) {
+            this.data.clear();
+            this.data.addAll(data);
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public Object getItem(int position) {
             return null;
         }
 
         @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            try {
-                Type listType = new TypeToken<List<HotTopic>>(){}.getType();
-//                        HotTopic[] topics = new Gson().fromJson((String) msg.obj, HotTopic[].class);
-                final List<HotTopic> topicItems = new Gson().fromJson((String) o, listType);
-//                        TopicAdapter adapter = new TopicAdapter(MainActivity.this, R.layout.topic_item, topicItems);
-                RecyclerView recyclerView = (RecyclerView) findViewById(R.id.hots);
-                StaggeredGridLayoutManager layoutManager =
-                        new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-//                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
-//                        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-                recyclerView.setLayoutManager(layoutManager);
-                HotAdapter adapter = new HotAdapter(topicItems);
-                Log.d("size: ", String.valueOf(adapter.getItemCount()));
-                recyclerView.setAdapter(adapter);
-                //this is a java object
-            }catch (JsonParseException e) {
-                Toast.makeText(MainActivity.this, o.toString(), Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
+        public long getItemId(int position) {
+            return 0;
         }
-    }
 
-    private void getData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Api api = new Api();
-                try {
-                    String hotsJsonResponse = api.getHots();
-                    handler.sendMessage(Message.obtain(handler, 1, hotsJsonResponse));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    handler.sendMessage(Message.obtain(handler, 2, e.getMessage()));
-                }
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder = null;
+            if (convertView == null) {
+                LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+                convertView = layoutInflater.inflate(R.layout.item_view, null);
+
+                viewHolder = new ViewHolder();
+                viewHolder.imageView = (ImageView) convertView.findViewById(R.id.item_image);
+                viewHolder.title = (TextView) convertView.findViewById(R.id.item_title);
+                viewHolder.detail = (TextView) convertView.findViewById(R.id.item_detail);
+                convertView.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) convertView.getTag();
             }
-        }).start();
+
+
+            GankBean.ResultsBean bean = data.get(position);
+
+            if (bean.getImages() != null && !bean.getImages().isEmpty()) {
+                Picasso.with(parent.getContext()).load(bean.getImages().get(0)).into(viewHolder.imageView);
+            }
+            viewHolder.title.setText(bean.getWho());
+            viewHolder.detail.setText(bean.getDesc());
+            return convertView;
+        }
+
+        class ViewHolder {
+            public ImageView imageView;
+            public TextView title;
+            public TextView detail;
+
+
+        }
     }
 }

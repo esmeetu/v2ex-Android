@@ -8,7 +8,7 @@ public class CountDownSingleton {
 
     private static CountDownSingleton cdInstance;
 
-    private int value;
+    private final int value = 12;
 
     private TimerListener timerListener;
 
@@ -17,7 +17,6 @@ public class CountDownSingleton {
         public boolean handleMessage(Message message) {
             switch (message.what) {
                 case 0:
-                    value ++;
                     if (timerListener != null) {
                         timerListener.onTimeChange(value);
                     }
@@ -45,5 +44,14 @@ public class CountDownSingleton {
 
     public void setTimerListener(TimerListener timerListener) {
         this.timerListener = timerListener;
+        test("");
+    }
+
+    public void test(String object) {
+
+    }
+
+    public void test(CharSequence object) {
+
     }
 }

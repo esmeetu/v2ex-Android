@@ -4,20 +4,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/get_data"
+
+    <ListView
+        android:id="@+id/list_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="点击发起请求"
+        android:layout_height="match_parent"
         />
-
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/hots"
-        tools:listitem="@layout/topic_item"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </android.support.v7.widget.RecyclerView>
-
 
 </LinearLayout>
